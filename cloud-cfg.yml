@@ -1,0 +1,14 @@
+#cloud-config
+
+apt_update: true
+apt_upgrade: true
+
+runcmd:
+ - apt install -y rabbitmq-server
+ - apt install -y python3-pip
+ - pip3 install celery
+ - rabbitmqctl add_user ubuntu ubuntu
+ - rabbitmqctl add_vhost twitterPronome
+ - rabbitmqctl set_user_tags ubuntu mytag
+ - rabbitmqctl set_permissions -p twitterPronome ubuntu ".*" ".*" ".*"
+ - git clone https://github.com/AdamInersjo/ACC-Lab3.git ~/ACC-Lab3
