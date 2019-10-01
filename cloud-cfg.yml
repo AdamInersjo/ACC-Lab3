@@ -12,3 +12,4 @@ runcmd:
  - rabbitmqctl set_user_tags ubuntu mytag
  - rabbitmqctl set_permissions -p twitterPronome ubuntu ".*" ".*" ".*"
  - git clone https://github.com/AdamInersjo/ACC-Lab3.git ~/ACC-Lab3
+ - pip3 install ndjson
