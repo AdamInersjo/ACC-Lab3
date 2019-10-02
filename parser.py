@@ -22,6 +22,7 @@ def find_pronouns(text: str) -> dict:
         result[key]+= count_word_occurances(text, key)
     return result
 
+
 # Adaptation from aaronasterling's answer https://stackoverflow.com/a/4155029
 def count_word_occurances(text: str, word: str) -> int:
     index = 0
@@ -30,13 +31,19 @@ def count_word_occurances(text: str, word: str) -> int:
         next_index = text.find(word, index)
         if next_index == -1:
             return count
+        if (is_word(text, next_index, next_index + len(word))):
+            count += 1
         index = next_index + len(word)
-        if next_index != 0 and not word_delimiter(text[next_index-1]):
-            continue
-        if index <= len(text) - 1 and not word_delimiter(text[index]):
-            continue
-        count += 1
     return count
+
+
+def is_word(text, start, end):
+    if start != 0 and not word_delimiter(text[start-1]):
+        return False
+    if end <= len(text) - 1 and not word_delimiter(text[end]):
+        return False
+    return True
+
 
 def word_delimiter(letter: str) -> bool:
     return letter in (string.whitespace + string.punctuation)
