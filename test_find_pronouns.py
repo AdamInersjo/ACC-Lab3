@@ -76,6 +76,11 @@ class Testfind_pronouns(unittest.TestCase):
         r = find_pronouns(s)
         self.assertEqual(expectedResult(han=1), r)
 
+    def test_mix_of_words(self):
+        s = "Jag han hon och den det dem hen och så vidare"
+        r = find_pronouns(s)
+        self.assertEqual(expectedResult(han=1, hon=1, den=1, hen=1), r)
+
 
 
 if __name__ == '__main__':
