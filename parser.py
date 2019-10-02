@@ -25,15 +25,15 @@ def find_pronouns(text: str) -> dict:
 
 # Adaptation from aaronasterling's answer https://stackoverflow.com/a/4155029
 def count_word_occurances(text: str, word: str) -> int:
-    index = 0
+    next_index = 0
     count = 0
-    while (index < len(text)):
-        next_index = text.find(word, index)
-        if next_index == -1:
+    while (next_index < len(text)):
+        found_index = text.find(word, next_index)
+        if found_index == -1:
             return count
-        if (is_word(text, next_index, next_index + len(word))):
+        next_index = found_index + len(word)
+        if (is_word(text, found_index, next_index)):
             count += 1
-        index = next_index + len(word)
     return count
 
 
