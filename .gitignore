@@ -3,3 +3,6 @@ __pycache__/
 
 # Ignore VSCode
 .vscode/
+
+# Ignore Twitter data folder
+data/
