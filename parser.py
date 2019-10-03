@@ -1,20 +1,34 @@
 import jsonlines
 import string
+import os
 
+DATA_PATH = 'data/'
+
+
+def parse_data():
+    files = os.listdir(DATA_PATH)
+    total = {'han': 0, 'hon': 0, 'den': 0, 'denna': 0, 'denne': 0, 'hen': 0}
+    progress = 0
+    progress_total = len(files)
+    for f in files:
+        print("Status: file %d / %d" %(progress, progress_total))
+        print(total)
+        with jsonlines.open(DATA_PATH + f) as reader:
+            for tweet in reader.iter(type=dict, skip_empty=True):
+                if not is_retweet(tweet):
+                    r = find_pronouns(tweet['text'])
+                    add_to_first(total, r)
+        progress += 1
+    print(total)
+
+
+def is_retweet(tweet: dict) -> bool:
+    return 'retweeted_status' in tweet
 
 def add_to_first(first: dict, second: dict):
     """Add the values from the second dict to the first, only adding values of keys that are in the first."""
     for key in first:
         first[key] += second[key]
-
-
-def parse_test_data():
-    with jsonlines.open('test_data.ndjson') as reader:
-        total = {'han': 0, 'hon': 0, 'den': 0, 'denna': 0, 'denne': 0, 'hen': 0}
-        for tweet in reader.iter(type=dict, skip_empty=True):
-            r = find_pronouns(tweet['text'])
-            add_to_first(total, r)
-    print(total)
 
 
 def find_pronouns(text: str) -> dict:
@@ -63,4 +77,4 @@ def word_delimiter(letter: str) -> bool:
 
 
 if __name__ == '__main__':
-    parse_test_data()
+    parse_data()

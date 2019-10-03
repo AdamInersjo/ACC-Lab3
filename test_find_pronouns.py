@@ -1,5 +1,5 @@
 import unittest
-from parser import find_pronouns
+from parser import find_pronouns, is_retweet
 
 def expectedResult(han=0, hon=0, den=0, denna=0, denne=0, hen=0):
         return {'han': han, 'hon': hon, 'den': den, 'denna': denna, 'denne': denne, 'hen': hen}
@@ -80,6 +80,15 @@ class Testfind_pronouns(unittest.TestCase):
         s = "Jag han hon och den det dem hen och så vidare"
         r = find_pronouns(s)
         self.assertEqual(expectedResult(han=1, hon=1, den=1, hen=1), r)
+
+    def test_is_retweet_true(self):
+        tweet = {"created_at":"T","id":7,"id_str":"7","text":"V",
+            "retweeted_status":{"created_at":"W"}, "retweeted":False}
+        self.assertTrue(is_retweet(tweet))
+
+    def test_is_retweet_false(self):
+        tweet = {"created_at":"T","id":7,"id_str":"7","text":"V", "retweeted":False}
+        self.assertFalse(is_retweet(tweet))
 
 
 
