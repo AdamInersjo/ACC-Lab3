@@ -7,7 +7,8 @@ DATA_PATH = 'data/'
 
 def parse_data():
     files = os.listdir(DATA_PATH)
-    total = {'han': 0, 'hon': 0, 'den': 0, 'denna': 0, 'denne': 0, 'hen': 0}
+    words = ['han', 'hon', 'den', 'denna', 'denne', 'hen']
+    total = {key: 0 for key in words}
     progress = 0
     progress_total = len(files)
     for f in files:
@@ -16,7 +17,7 @@ def parse_data():
         with jsonlines.open(DATA_PATH + f) as reader:
             for tweet in reader.iter(type=dict, skip_empty=True):
                 if not is_retweet(tweet):
-                    r = find_pronouns(tweet['text'])
+                    r = count_multiple_words(tweet['text'], words)
                     add_to_first(total, r)
         progress += 1
     print(total)
@@ -31,17 +32,14 @@ def add_to_first(first: dict, second: dict):
         first[key] += second[key]
 
 
-def find_pronouns(text: str) -> dict:
-    """Count the number of times pronouns are found in a string.
-
-    The pronouns counted are: 'han', 'hon', 'den', 'denna', 'denne' & 'hen' 
-    """
-    result = {'han': 0, 'hon': 0, 'den': 0, 'denna': 0, 'denne': 0, 'hen': 0}
+def count_multiple_words(text: str, words: list) -> dict:
+    """Count the number of times the provided words are found in a string."""
+    result = {}
     text = text.lower()
-    for key in result:
-        result[key] = count_word_occurances(text, key)
+    for word in words:
+        result[word] = count_word_occurances(text, word)
     return result
-
+    
 
 def count_word_occurances(text: str, word: str) -> int:
     """Return the nuber of times a complete word is found in a string."""
