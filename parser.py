@@ -5,22 +5,17 @@ import os
 DATA_PATH = 'data/'
 
 
-def parse_data():
+def parse_data(words):
     files = os.listdir(DATA_PATH)
-    words = ['han', 'hon', 'den', 'denna', 'denne', 'hen']
     total = {key: 0 for key in words}
-    progress = 0
-    progress_total = len(files)
     for f in files:
-        print("Status: file %d / %d" %(progress, progress_total))
-        print(total)
         with jsonlines.open(DATA_PATH + f) as reader:
             for tweet in reader.iter(type=dict, skip_empty=True):
                 if not is_retweet(tweet):
                     r = count_multiple_words(tweet['text'], words)
                     add_to_first(total, r)
-        progress += 1
-    print(total)
+        return total
+    return total
 
 
 def is_retweet(tweet: dict) -> bool:
@@ -75,4 +70,5 @@ def word_delimiter(letter: str) -> bool:
 
 
 if __name__ == '__main__':
-    parse_data()
+    words = ['han', 'hon', 'den', 'denna', 'denne', 'hen']
+    print(parse_data(words))

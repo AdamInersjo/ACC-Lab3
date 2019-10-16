@@ -1,7 +1,9 @@
 from celery import Celery
+from parser import parse_data
 
-app = Celery('tasks', backend='rpc://', broker='pyamqp://localhost')
+celery_app = Celery('tasks', backend='redis://localhost', broker='redis://localhost:6379')
+# celery_app = Celery('tasks', backend='rpc://', broker='amqp://localhost')
 
-@app.task
-def add(x, y):
-    return x + y
+@celery_app.task
+def count_words(words):
+    return parse_data(words)
