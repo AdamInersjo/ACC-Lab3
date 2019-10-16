@@ -8,14 +8,16 @@ DATA_PATH = 'data/'
 def parse_data(words):
     files = os.listdir(DATA_PATH)
     total = {key: 0 for key in words}
+    stats = {'tweets': 0, 'unique_tweets': 0}
     for f in files:
         with jsonlines.open(DATA_PATH + f) as reader:
             for tweet in reader.iter(type=dict, skip_empty=True):
+                stats['tweets'] += 1
                 if not is_retweet(tweet):
+                    stats['unique_tweets'] += 1
                     r = count_multiple_words(tweet['text'], words)
                     add_to_first(total, r)
-        return total
-    return total
+    return {'tweets': stats['tweets'], 'unique_tweets': stats['unique_tweets'], 'words': total}
 
 
 def is_retweet(tweet: dict) -> bool:
