@@ -4,12 +4,16 @@ apt_update: true
 apt_upgrade: true
 
 runcmd:
+ - mkdir -p /mnt/volume
+ - mount /dev/disk/by-id/virtio-b9c80bf0-833d-4f2d-a /mnt/volume
  - apt install -y rabbitmq-server
  - apt install -y python3-pip
  - pip3 install celery
  - rabbitmqctl add_user ubuntu ubuntu
- - rabbitmqctl add_vhost twitterPronome
+ - rabbitmqctl add_vhost twitterPronoun
  - rabbitmqctl set_user_tags ubuntu mytag
- - rabbitmqctl set_permissions -p twitterPronome ubuntu ".*" ".*" ".*"
+ - rabbitmqctl set_permissions -p twitterPronoun ubuntu ".*" ".*" ".*"
  - git clone https://github.com/AdamInersjo/ACC-Lab3.git ~/ACC-Lab3
  - pip3 install jsonlines
+ - pip3 install flask
+ - 

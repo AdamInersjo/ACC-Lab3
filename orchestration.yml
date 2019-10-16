@@ -1,0 +1,102 @@
+
+# Later version to be able to use OS::Heat::CloudConfig
+heat_template_version: 2014-10-16
+
+description: Heat orchestration to create Pronoun aaS
+
+# Declare parameters 
+parameters:
+
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for compute instance
+    default: Ubuntu 16.04 LTS (Xenial Xerus) - latest
+
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used
+    default: ssc.small
+
+  key:
+    type: string
+    label: Key name
+    description: Name of key-pair to be used for compute instance
+    default: Win10AdIn
+
+  public_network:
+    type: string
+    label: Public network name or ID
+    description: Public network with floating IP addresses.
+    default: Public External IPv4 Network
+
+  private_network:
+    type: string
+    label: Private network name or ID
+    description: Private network.
+    default: SNIC 2019/10-32 Internal IPv4 Network
+
+  private_subnet:
+    type: string
+    label: Private subnet name or ID
+    description: Private subnet.
+    default: SNIC 2019/10-32 Internal IPv4 Subnet
+
+  data_volume:
+    type: string
+    label: Volume ID
+    description: ID of the containing the Twitter data.
+    default: b9c80bf0-833d-4f2d-a63a-9db2c07b71e3
+
+# Resource allocation
+resources:
+  boot_config:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        get_file: cloud-cfg.yml
+
+  main_instance_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: private_network }
+      fixed_ips:
+        - subnet_id: { get_param: private_subnet }
+
+  main_instance:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      key_name: { get_param: key }
+      networks:
+        - port: { get_resource: main_instance_port }         
+      user_data: { get_resource: boot_config }
+      user_data_format: SOFTWARE_CONFIG
+
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_param: data_volume }
+      instance_uuid: { get_resource: main_instance }
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: { get_param: public_network }
+
+  floating_ip_assoc:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_resource: main_instance_port } 
+
+# Output in case of successful booting
+outputs:
+  instance_name:
+    description: Name of the instance
+    value: { get_attr: [main_instance, name] }
+  instance_ip:
+    description: IP address of the instance
+    value: { get_attr: [main_instance, first_address, floating_ip, floating_ip_address] }
