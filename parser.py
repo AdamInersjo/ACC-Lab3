@@ -2,7 +2,7 @@ import jsonlines
 import string
 import os
 
-DATA_PATH = 'data/'
+DATA_PATH = '/mnt/volume/data/'
 
 
 def parse_data(words):

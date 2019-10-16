@@ -16,4 +16,6 @@ runcmd:
  - git clone https://github.com/AdamInersjo/ACC-Lab3.git ~/ACC-Lab3
  - pip3 install jsonlines
  - pip3 install flask
- - 
+ - cd ~/ACC-Lab3
+ - celery -A tasks worker --detach
+ - python3 app.py
